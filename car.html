@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>2D Driving Game</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: #333;
+    }
+
+    canvas {
+      display: block;
+      margin: 0 auto;
+      background: #444;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="gameCanvas" width="400" height="600"></canvas>
+
+  <script>
+    const canvas = document.getElementById("gameCanvas");
+    const ctx = canvas.getContext("2d");
+
+    const roadWidth = 200;
+    const laneCount = 2;
+    const roadX = canvas.width / 2 - roadWidth / 2;
+    let roadLineOffset = 0;
+
+    const car = {
+      x: canvas.width / 2 - 25,
+      y: canvas.height - 100,
+      width: 50,
+      height: 100,
+      color: 'red',
+      speed: 5
+    };
+
+    function drawRoad() {
+      ctx.fillStyle = '#222';
+      ctx.fillRect(roadX, 0, roadWidth, canvas.height);
+
+      ctx.strokeStyle = 'white';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([20, 20]);
+
+      for (let i = 0; i < canvas.height / 40; i++) {
+        let y = i * 40 + roadLineOffset;
+        ctx.beginPath();
+        ctx.moveTo(canvas.width / 2, y);
+        ctx.lineTo(canvas.width / 2, y + 20);
+        ctx.stroke();
+      }
+
+      ctx.setLineDash([]);
+    }
+
+    function drawCar() {
+      ctx.fillStyle = car.color;
+      ctx.fillRect(car.x, car.y, car.width, car.height);
+    }
+
+    function update() {
+      roadLineOffset += 5;
+      if (roadLineOffset >= 40) {
+        roadLineOffset = 0;
+      }
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      drawRoad();
+      drawCar();
+
+      requestAnimationFrame(update);
+    }
+
+    function handleKey(e) {
+      if (e.key === "ArrowLeft" && car.x > roadX) {
+        car.x -= car.speed;
+      }
+      if (e.key === "ArrowRight" && car.x + car.width < roadX + roadWidth) {
+        car.x += car.speed;
+      }
+    }
+
+    document.addEventListener("keydown", handleKey);
+    update();
+  </script>
+</body>
+</html>
